@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web3数字藏品商城</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    
+    body {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    header {
+        background-color: #171b2b;
+        padding: 15px 0;
+    }
+    
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #6c5ce7;
+    }
+    
+    .nav-menu {
+        display: flex;
+        list-style: none;
+    }
+    
+    .nav-menu li {
+        margin-left: 30px;
+    }
+    
+    .nav-menu a {
+        text-decoration: none;
+        color: #f8f9fa;
+    }
+    
+    .wallet-btn {
+        background-color: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .hero {
+        padding: 80px 0;
+        text-align: center;
+        background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        color: white;
+    }
+    
+    .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+    
+    .hero p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .nft-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        padding: 50px 0;
+    }
+    
+    .nft-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nft-img {
+        width: 100%;
+        height: 280px;
+        background-color: #ddd;
+    }
+    
+    .nft-info {
+        padding: 20px;
+    }
+    
+    .nft-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .nft-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .buy-btn {
+        background-color: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    footer {
+        background-color: #333;
+        color: white;
+        padding: 50px 0 20px;
+    }
+    
+    .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #444;
+        color: #999;
+    }
+
+    /* 像素风格字体 */
+    @font-face {
+        font-family: 'Pokemon';
+        src: url('https://cdn.jsdelivr.net/npm/pokemon-font@1.8.1/fonts/pokemon-font.woff2') format('woff2');
+    }
+    
+    /* 对战窗口样式 */
+    .battle-window {
+        background: #f8f8f8;
+        border: 4px solid #333;
+        padding: 10px;
+        margin: 40px 0;
+        image-rendering: pixelated;
+    }
+    
+    .battle-arena {
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAH0lEQVQYV2NkQAX/GZH4/xkYGBhhAmAOSBJEwDkgAQCCrgQEqRgDqgAAAABJRU5ErkJggg==') repeat;
+        height: 300px;
+        position: relative;
+        border: 2px solid #000;
+        margin-bottom: 10px;
+    }
+    
+    .pokemon-platform {
+        position: absolute;
+        width: 120px;
+        height: 40px;
+        background: #786c54;
+        border: 2px solid #000;
+    }
+    
+    .platform-enemy {
+        top: 60px;
+        left: 40px;
+    }
+    
+    .platform-player {
+        bottom: 40px;
+        right: 40px;
+    }
+    
+    .pokemon-sprite {
+        position: absolute;
+        width: 96px;
+        height: 96px;
+        image-rendering: pixelated;
+    }
+    
+    .pokemon-enemy {
+        top: 20px;
+        left: 50px;
+    }
+    
+    .pokemon-player {
+        bottom: 60px;
+        right: 50px;
+        transform: scaleX(-1);
+    }
+    
+    .status-box {
+        background: white;
+        border: 4px solid #333;
+        border-radius: 0;
+        padding: 10px;
+        margin: 5px 0;
+        font-family: 'Pokemon', monospace;
+    }
+    
+    .hp-container {
+        background: #fff;
+        padding: 8px;
+        border: 2px solid #000;
+        margin-bottom: 5px;
+    }
+    
+    .hp-bar {
+        height: 12px;
+        background: #ff0000;
+        position: relative;
+        border: 1px solid #000;
+    }
+    
+    .hp-fill {
+        height: 100%;
+        background: #00ff00;
+        transition: width 0.5s;
+    }
+    
+    .battle-menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        background: #fff;
+        border: 4px solid #333;
+        padding: 10px;
+    }
+    
+    .battle-btn {
+        background: #f8f8f8;
+        border: 2px solid #333;
+        padding: 8px;
+        font-family: 'Pokemon', monospace;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .battle-btn:hover {
+        background: #e8e8e8;
+    }
+    
+    .battle-btn:active {
+        background: #d8d8d8;
+    }
+    
+    .battle-text {
+        background: white;
+        border: 4px solid #333;
+        padding: 15px;
+        margin-top: 10px;
+        font-family: 'Pokemon', monospace;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    .pokemon-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        font-family: 'Pokemon', monospace;
+    }
+    
+    .pokemon-name {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .pokemon-level {
+        font-size: 14px;
+    }
+
+    .status-window {
+        position: absolute;
+        background: white;
+        border: 4px solid #333;
+        padding: 8px;
+        width: 200px;
+    }
+    
+    .enemy-status {
+        top: 20px;
+        right: 40px;
+    }
+    
+    .player-status {
+        bottom: 100px;
+        left: 40px;
+    }
+    
+    .pokemon-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 5px;
+    }
+    
+    .name-level {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+    }
+    
+    .pokemon-name {
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .pokemon-level {
+        font-size: 14px;
+    }
+    
+    .hp-label {
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+    
+    .hp-container {
+        width: 100%;
+        background: #fff;
+        margin-bottom: 2px;
+    }
+    
+    .hp-bar {
+        height: 6px;
+        background: #ff0000;
+        border: 1px solid #000;
+    }
+    
+    .hp-fill {
+        height: 100%;
+        background: #00ff00;
+        transition: width 0.5s;
+    }
+    
+    .hp-numbers {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 14px;
+        margin-top: 2px;
+    }
+    
+    .battle-arena {
+        height: 400px; /* 增加战斗场地高度 */
+        position: relative;
+        overflow: hidden;
+    }
+</style>
+</head>
+<body>
+<header>
+    <div class="container header-container">
+        <div class="logo">像素生物</div>
+        <ul class="nav-menu">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">市场</a></li>
+            <li><a href="#">竞技场</a></li>
+            <li><a href="#">关于我们</a></li>
+        </ul>
+        <button class="wallet-btn">连接钱包</button>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h1>发现、收藏和对战<br>稀有数字生物藏品</h1>
+        <p>探索基于区块链技术的像素风格数字生物，拥有真正的数字所有权</p>
+    </div>
+</section>
+
+<section class="container">
+    <div class="nft-grid">
+        <!-- NFT Card 1 -->
+        <div class="nft-card">
+            <div class="nft-img"></div>
+            <div class="nft-info">
+                <div class="nft-title">金色野兽 #001</div>
+                <div class="nft-price">
+                    <span>0.25 ETH</span>
+                    <button class="buy-btn">购买</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NFT Card 2 -->
+        <div class="nft-card">
+            <div class="nft-img"></div>
+            <div class="nft-info">
+                <div class="nft-title">绿色怪物 #002</div>
+                <div class="nft-price">
+                    <span>0.15 ETH</span>
+                    <button class="buy-btn">购买</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NFT Card 3 -->
+        <div class="nft-card">
+            <div class="nft-img"></div>
+            <div class="nft-info">
+                <div class="nft-title">蓝色精灵 #003</div>
+                <div class="nft-price">
+                    <span>0.18 ETH</span>
+                    <button class="buy-btn">购买</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="battle-window">
+        <div class="battle-arena">
+            <!-- 敌方状态窗口 -->
+            <div class="status-window enemy-status">
+                <div class="name-level">
+                    <span class="pokemon-name">绿色怪物</span>
+                    <span class="pokemon-level">L:23</span>
+                </div>
+                <div class="hp-label">HP</div>
+                <div class="hp-container">
+                    <div class="hp-bar">
+                        <div class="hp-fill" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div class="hp-numbers">
+                    <span>45/100</span>
+                </div>
+            </div>
+
+            <!-- 我方状态窗口 -->
+            <div class="status-window player-status">
+                <div class="name-level">
+                    <span class="pokemon-name">金色野兽</span>
+                    <span class="pokemon-level">L:25</span>
+                </div>
+                <div class="hp-label">HP</div>
+                <div class="hp-container">
+                    <div class="hp-bar">
+                        <div class="hp-fill" style="width: 70%"></div>
+                    </div>
+                </div>
+                <div class="hp-numbers">
+                    <span>70/100</span>
+                </div>
+            </div>
+
+            <!-- 敌方平台和精灵 -->
+            <div class="pokemon-platform platform-enemy"></div>
+            <div class="pokemon-sprite pokemon-enemy">
+                <!-- 敌方精灵图像 -->
+            </div>
+            
+            <!-- 我方平台和精灵 -->
+            <div class="pokemon-platform platform-player"></div>
+            <div class="pokemon-sprite pokemon-player">
+                <!-- 我方精灵图像 -->
+            </div>
+        </div>
+        
+        <!-- 战斗文本框 -->
+        <div class="battle-text">
+            野生的绿色怪物出现了！
+        </div>
+        
+        <!-- 战斗菜单 -->
+        <div class="battle-menu">
+            <button class="battle-btn">战斗</button>
+            <button class="battle-btn">物品</button>
+            <button class="battle-btn">数字生物</button>
+            <button class="battle-btn">逃跑</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="copyright">
+            &copy; 2025 数字藏品. 保留所有权利.
+        </div>
+    </div>
+</footer>
+</body>
+</html>
